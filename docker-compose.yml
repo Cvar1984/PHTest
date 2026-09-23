@@ -1,0 +1,74 @@
+services:
+  php-4.1.2:
+    build:
+      context: ./docker
+      args:
+        PHP_SERIES: "4"
+        PHP_VERSION: "4.1.2"
+        CONFIGURE_FLAGS: "--enable-cgi --without-mysql --without-zlib"
+    ports: ["8412:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/4.1.2/php.ini:/usr/local/lib/php.ini
+
+  php-4.2.3:
+    build:
+      context: ./docker
+      args:
+        PHP_SERIES: "4"
+        PHP_VERSION: "4.2.3"
+        CONFIGURE_FLAGS: "--enable-cgi --without-mysql --without-zlib"
+    ports: ["8423:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/4.2.3/php.ini:/usr/local/lib/php.ini
+
+  php-4.3.0:
+    build:
+      context: ./docker
+      args:
+        PHP_SERIES: "4"
+        PHP_VERSION: "4.3.0"
+        CONFIGURE_FLAGS: "--enable-cgi --without-mysql --with-zlib"
+    ports: ["8430:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/4.3.0/php.ini:/usr/local/lib/php.ini
+
+  php-4.3.11:
+    build:
+      context: ./docker
+      args:
+        PHP_SERIES: "4"
+        PHP_VERSION: "4.3.11"
+        CONFIGURE_FLAGS: "--enable-cgi --without-mysql --with-zlib"
+    ports: ["8431:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/4.3.11/php.ini:/usr/local/lib/php.ini
+
+  php-5.0.5:
+    build:
+      context: ./docker
+      args:
+        PHP_SERIES: "5"
+        PHP_VERSION: "5.0.5"
+        CONFIGURE_FLAGS: "--enable-cgi --with-zlib --disable-libxml --disable-dom --disable-simplexml --disable-xml --without-pear"
+    ports: ["8505:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/5.0.5/php.ini:/usr/local/lib/php.ini
+
+  php-7.4.33:
+    image: php:7.4.33-apache
+    ports: ["8743:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/7.4.33/php.ini:/usr/local/etc/php/php.ini
+
+  php-8.5.6:
+    image: php:8.5.6-apache
+    ports: ["8856:80"]
+    volumes:
+      - ./www:/var/www/html
+      - ./conf/8.5.6/php.ini:/usr/local/etc/php/php.ini
