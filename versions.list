@@ -1,0 +1,8 @@
+# version|type|configure flags (legacy only)
+4.1.2|legacy|--enable-cgi --without-mysql --without-zlib
+4.2.3|legacy|--enable-cgi --without-mysql --without-zlib
+4.3.0|legacy|--enable-cgi --without-mysql --with-zlib
+4.3.11|legacy|--enable-cgi --without-mysql --with-zlib
+5.0.5|legacy|--enable-cgi --with-zlib --disable-libxml --disable-dom --disable-simplexml --disable-xml --without-pear
+7.4.33|official|
+8.5.6|official|
