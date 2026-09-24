@@ -15,7 +15,57 @@ docker/apache-php-cgi.conf  # Apache CGI wiring (mod_cgid + mod_actions) — leg
 docker-compose.yml          # all 7 services (build args or image), ports, and volumes
 conf/<version>/php.ini      # per-version config, bind-mounted — edit + restart to apply
 www/                        # shared docroot, bind-mounted into every container
+wizard.sh                   # menu-driven manager for everything below
+versions.list               # versions the wizard knows about: version|type|configure flags
 ```
+
+## Wizard
+
+`wizard.sh` manages the containers without `docker compose`. Run it with no
+arguments for a menu (fzf pickers if fzf is installed, numbered menus if not).
+The menu opens with a table of every version, its port, how many functions
+are blocked, and its container state.
+
+```
+./wizard.sh                        # interactive menu
+./wizard.sh start 4.1.2 8.5.6      # one-shot: ACTION [VERSION...]
+./wizard.sh stop all               # "all" works for any action that takes versions
+./wizard.sh status                 # print the table and exit
+```
+
+| Action    | What it does |
+|-----------|--------------|
+| `add`     | Registers a new version. Asks for `X.Y.Z` and the type (`official` uses the `php:<version>-apache` image, `legacy` compiles from source and only works for PHP 5 and older). The port is worked out from the version, and `php.ini` starts from a preset or a copy of another version's. |
+| `remove`  | Deletes the container, the built image and the `versions.list` entry, and optionally `conf/<version>/`. |
+| `config`  | Edits a version's `php.ini`, see below. |
+| `build`   | Compiles a legacy image or pulls an official one. |
+| `start`   | Starts the container, creating it first (and building the image if it is missing). |
+| `stop`    | Stops the container. |
+| `open`    | Opens `http://localhost:<port>/` in your browser. |
+| `cleanup` | Removes stopped `phtest-*` containers, dangling images (system-wide, it asks first) and unused `phtest-php:*` images. Every step asks before deleting. |
+
+Ports follow one rule: `8` + major + minor + the last digit of the patch
+version, so 4.1.2 is 8412 and 7.4.33 is 8743. `add` refuses a version whose
+port is already taken.
+
+### Toggling disabled functions
+
+`./wizard.sh config [VERSION...]` opens a session per version. Every list
+shows the current state next to each name (`exec  blocked`), and you pick the
+rows to flip.
+
+- **toggle categories**: shell, process, env, filesystem, network, apache, recon, logging
+- **toggle functions**: flip single functions, including custom ones already in the file
+- **toggle ini flags**: `allow_url_fopen`, `allow_url_include`, `expose_php`, `display_errors`
+- **block custom function**: block any function name you type
+- **apply preset**: `strict` (everything blocked, remote download off), `shell-only` (the exec family), or `open` (nothing blocked)
+
+When you finish and the container is running, the wizard offers to restart
+it, because PHP reads `php.ini` only at start. The first time the wizard
+writes a `php.ini` it replaces the long "strict hosting" comment block with
+a one-line note, since that list would stop matching once you toggle things.
+
+Set `PHTEST_NO_FZF=1` to force the numbered menus even when fzf is installed.
 
 ## Starting the containers
 
